@@ -2,72 +2,46 @@ from PIL import Image
 from collections import Counter
 from flask import Flask, render_template, request
 
-
 app = Flask(__name__)
-def color_analyze(image,x):
-    image = Image.open(image)
-
-    image = image.convert("RGB")
-
-    pixels = list(image.getdata())
 
 
-
-    every_pixel = ["#{:02x}{:02x}{:02x}".format(r, g, b) for r, g, b in pixels]
-
-
+def color_analyze(image, x):
+    image = Image.open(image).convert("RGB")
 
 
-    counts = Counter(pixels)
-
-
+    counts = Counter(image.getdata())
 
 
     top_colors = counts.most_common(x)
 
-    colors = []
-    percent = []
-    for color in top_colors:
-        colors.append(color[0])
-        percent.append(str(round(color[1]/len(every_pixel) * 100,2)) + "%")
 
+    total_pixels = sum(counts.values())
+    colors = ["#{:02x}{:02x}{:02x}".format(*color) for color, _ in top_colors]
+    percents = [f"{round(count / total_pixels * 100, 2)}%" for _, count in top_colors]
 
-    top_hex_colors = ["#{:02x}{:02x}{:02x}".format(*color) for color, _ in top_colors]
-
-
-
-
-
-    return top_hex_colors, percent
+    return colors, percents
 
 
 picture = "static/img/Picture.png"
 starter = "static/img/Starter.png"
 
+
 @app.route('/')
 def home():
-
     num = 5
-    color, percent = color_analyze(starter,num)
-    return render_template("index.html", colors=color, percents=percent, num=num, photo=starter)
+    colors, percents = color_analyze(starter, num)
+    return render_template("index.html", colors=colors, percents=percents, num=num, photo=starter)
 
 
 @app.route('/upload', methods=["POST"])
 def uploaded():
     file = request.files["picture"]
-    num = request.form.get("num")
+    num = int(request.form.get("num", 5))
     if file:
         file.save(picture)
-
-        color, percent = color_analyze(picture, int(num))
-    else:
-        color, percent = color_analyze(picture, int(num))
-    return render_template("index.html", colors=color, percents=percent, num=num, photo=picture)
-
-
+    colors, percents = color_analyze(picture, num)
+    return render_template("index.html", colors=colors, percents=percents, num=num, photo=picture)
 
 
 if __name__ == "__main__":
     app.run(debug=True)
-
-
