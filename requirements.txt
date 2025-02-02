@@ -10,3 +10,4 @@ requests==2.32.3
 pypdf==5.2.0
 pillow==11.1.0
 numpy==2.2.1
+gunicorn==21.2.0
