@@ -1,5 +1,5 @@
 from PIL import Image
-from collections import Counter
+from collections import Counter, defaultdict
 from flask import Flask, render_template, request
 import numpy as np
 from skimage.color import rgb2lab, deltaE_cie76
@@ -7,20 +7,22 @@ from skimage.color import rgb2lab, deltaE_cie76
 app = Flask(__name__)
 
 def closeColor(color, groups, threshold=15):
-    colors = rgb2lab(np.array(color, dtype=np.uint8).reshape(1, 1, 3) / 255.0)[0][0]
+    color_lab = rgb2lab(np.array(color, dtype=np.uint8).reshape(1, 1, 3) / 255.0)[0][0]
 
     for group in groups:
         group_lab = rgb2lab(np.array(group, dtype=np.uint8).reshape(1, 1, 3) / 255.0)[0][0]
-        if deltaE_cie76(colors, group_lab) < threshold:
+        if deltaE_cie76(color_lab, group_lab) < threshold:
             return group
-
     return None
 
 def color_analyze(image, x, delta):
     image = Image.open(image).convert("RGB")
+
+    image = image.resize((200, 200))
+
     counts = Counter(image.getdata())
 
-    groups = {}
+    groups = defaultdict(int)
 
 
     for color, count in counts.items():
@@ -48,7 +50,8 @@ starter = "static/img/Starter.png"
 @app.route('/')
 def home():
     num = 5
-    delta = 7
+    delta = 15
+    picture = starter
     colors, percents = color_analyze(starter, num, delta)
     return render_template("index.html", colors=colors, percents=percents, num=num, photo=starter, delta=delta)
 
