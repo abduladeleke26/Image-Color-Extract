@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: black;">
+<head>
+    <meta charset="UTF-8">
+    <title>Image Color Extract</title>
+</head>
+<body>
+
+    <center>
+        <h1 style="color: white; font-size: 75px; font-family: verdana;">Image Color Extract</h1>
+
+
+
+
+        <div style="background-color: gray; width: 90%; max-width: 800px; padding: 30px; margin-bottom: 60px; border-radius: 10px; margin: auto;">
+
+            <h1 style="text-align: left; margin-left:30px; margin-bottom: 20px; font-family: verdana;">Image:</h1>
+
+            <img src="../static/img/Picture.png" style="margin-bottom: 20px; width: 100%; ">
+
+            <div style="display: flex; border-bottom: 2px solid black;">
+                <h3 style="text-align: left; margin-left:10px; font-family: verdana;">Color</h3>
+                <h3 style="margin-left: 150px; font-family: verdana;">Color Code</h3>
+                <h3 style="margin-left: 80px; font-family: verdana;">Percentage</h3>
+            </div>
+
+
+            <div style="height: 20px;" ></div>
+
+
+            {% for color in colors %}
+                <div style="display: flex; align-items: left; margin-top: 2px; display: flex;">
+                    <div style="background-color: {{ color }}; width: 170px; height: 20px; margin-left: 10px;" ></div>
+                    <h3 style="margin-top: -1px; margin-left: 40px; font-family: verdana;"> {{ color }} </h3>
+                    <h3 style="margin-top: -1px; margin-left: 130px; font-family: verdana;">{{ percents[colors.index(color)] }}</h3>
+                </div>
+            {% endfor %}
+
+            <div style="height: 20px;" ></div>
+
+            <form action="/upload" method="post" enctype="multipart/form-data" style=" text-align: left; margin-left:15px; margin-bottom: 20px;">
+                <h3 style="margin-bottom: -3px; font-family: verdana;" >File To Upload:</h3>
+                <input type="file" id="picture" name="picture" accept="image/*">
+
+                <h3 style="margin-bottom: -3px; font-family: verdana;">Number Of Colors:</h3>
+                <textarea rows="1" cols="4" name="num" >{{ num }}</textarea>
+
+                <div style="height: 2px;" ></div>
+
+                <center>
+                    <button type="submit" style="font-size: 15px;">Run</button>
+                </center>
+
+            </form>
+
+        </div>
+
+
+
+    </center>
+
+
+</body>
+</html>
