@@ -42,11 +42,13 @@ def color_analyze(image,x):
 
 
 picture = "static/img/Picture.png"
+starter = "static/img/Starter.png"
 
 @app.route('/')
 def home():
+
     num = 5
-    color, percent = color_analyze(picture,num)
+    color, percent = color_analyze(starter,num)
     return render_template("index.html", colors=color, percents=percent, num=num)
 
 
