@@ -49,7 +49,7 @@ def home():
 
     num = 5
     color, percent = color_analyze(starter,num)
-    return render_template("index.html", colors=color, percents=percent, num=num)
+    return render_template("index.html", colors=color, percents=percent, num=num, photo=starter)
 
 
 @app.route('/upload', methods=["POST"])
@@ -62,7 +62,7 @@ def uploaded():
         color, percent = color_analyze(picture, int(num))
     else:
         color, percent = color_analyze(picture, int(num))
-    return render_template("index.html", colors=color, percents=percent, num=num)
+    return render_template("index.html", colors=color, percents=percent, num=num, photo=picture)
 
 
 
