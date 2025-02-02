@@ -11,3 +11,4 @@ pypdf==5.2.0
 pillow==11.1.0
 numpy==2.2.1
 gunicorn==21.2.0
+scikit-image==0.25.1
