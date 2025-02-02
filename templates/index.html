@@ -38,12 +38,15 @@
 
             <div style="height: 20px;" ></div>
 
-            <form action="/upload" method="post" enctype="multipart/form-data" style=" text-align: left; margin-left:15px; margin-bottom: 20px;">
+            <form action="/colors" method="post" enctype="multipart/form-data" style=" text-align: left; margin-left:15px; margin-bottom: 20px;">
                 <h3 style="margin-bottom: -3px; font-family: verdana;" >File To Upload:</h3>
                 <input type="file" id="picture" name="picture" accept="image/*">
 
                 <h3 style="margin-bottom: -3px; font-family: verdana;">Number Of Colors:</h3>
                 <textarea rows="1" cols="4" name="num" >{{ num }}</textarea>
+
+                <h3 style="margin-bottom: -3px; font-family: verdana;">Delta:</h3>
+                <textarea rows="1" cols="4" name="delta" >{{ delta }}</textarea>
 
                 <div style="height: 2px;" ></div>
 

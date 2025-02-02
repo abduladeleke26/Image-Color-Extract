@@ -1,23 +1,42 @@
 from PIL import Image
 from collections import Counter
 from flask import Flask, render_template, request
+import numpy as np
+from skimage.color import rgb2lab, deltaE_cie76
 
 app = Flask(__name__)
 
+def closeColor(color, groups, threshold=15):
+    colors = rgb2lab(np.array(color, dtype=np.uint8).reshape(1, 1, 3) / 255.0)[0][0]
 
-def color_analyze(image, x):
+    for group in groups:
+        group_lab = rgb2lab(np.array(group, dtype=np.uint8).reshape(1, 1, 3) / 255.0)[0][0]
+        if deltaE_cie76(colors, group_lab) < threshold:
+            return group
+
+    return None
+
+def color_analyze(image, x, delta):
     image = Image.open(image).convert("RGB")
-
-
     counts = Counter(image.getdata())
 
+    groups = {}
 
-    top_colors = counts.most_common(x)
+
+    for color, count in counts.items():
+        closest = closeColor(color, groups, delta)
+        if closest:
+            groups[closest] += count
+        else:
+            groups[color] = count
 
 
-    total_pixels = sum(counts.values())
-    colors = ["#{:02x}{:02x}{:02x}".format(*color) for color, _ in top_colors]
-    percents = [f"{round(count / total_pixels * 100, 2)}%" for _, count in top_colors]
+    sortedd = sorted(groups.items(), key=lambda item: item[1], reverse=True)[:x]
+
+    total_pixels = sum(groups.values())
+
+    colors = ["#{:02x}{:02x}{:02x}".format(*color) for color, _ in sortedd]
+    percents = [f"{round(count / total_pixels * 100, 2)}%" for _, count in sortedd]
 
     return colors, percents
 
@@ -29,18 +48,20 @@ starter = "static/img/Starter.png"
 @app.route('/')
 def home():
     num = 5
-    colors, percents = color_analyze(starter, num)
-    return render_template("index.html", colors=colors, percents=percents, num=num, photo=starter)
+    delta = 7
+    colors, percents = color_analyze(starter, num, delta)
+    return render_template("index.html", colors=colors, percents=percents, num=num, photo=starter, delta=delta)
 
 
-@app.route('/upload', methods=["POST"])
+@app.route('/colors', methods=["POST"])
 def uploaded():
     file = request.files["picture"]
     num = int(request.form.get("num", 5))
+    delta = int(request.form.get("delta", 15))
     if file:
         file.save(picture)
-    colors, percents = color_analyze(picture, num)
-    return render_template("index.html", colors=colors, percents=percents, num=num, photo=picture)
+    colors, percents = color_analyze(picture, num, delta)
+    return render_template("index.html", colors=colors, percents=percents, num=num, photo=picture, delta=delta)
 
 
 if __name__ == "__main__":
