@@ -37,7 +37,12 @@ def home():
 @app.route('/upload', methods=["POST"])
 def uploaded():
     file = request.files["picture"]
-    num = int(request.form.get("num", 5))
+
+    try:
+        num = int(request.form.get("num", 5))
+    except:
+        num = 5
+
     if file:
         file.save(picture)
     colors, percents = color_analyze(picture, num)
